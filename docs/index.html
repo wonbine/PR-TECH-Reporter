@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>리포터 피알이 · 뉴스 브리핑</title>
+</head>
+<body>
+  <h1>리포터 피알이 · 뉴스 브리핑</h1>
+  <input type="date" id="datePicker" />
+  <div id="news"></div>
+
+  <script>
+    async function load(dateStr) {
+      const res = await fetch(`./data/${dateStr}.json`).catch(()=>null);
+      if (!res || !res.ok) {
+        document.getElementById("news").innerHTML = "자료 없음";
+        return;
+      }
+      const data = await res.json();
+      document.getElementById("news").innerHTML = data.map(item=>`
+        <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+          <b>[${item.category}] ${item.title}</b> (${item.src}, ${item.ts}) 
+          <a href="${item.url}" target="_blank">[원문]</a>
+          <ul>${item.points.map(p=>`<li>${p}</li>`).join("")}</ul>
+          <p>☞ 시사점: ${item.insight}</p>
+        </div>
+      `).join("");
+    }
+    document.getElementById("datePicker").addEventListener("change", e=>{
+      load(e.target.value);
+    });
+  </script>
+</body>
+</html>
